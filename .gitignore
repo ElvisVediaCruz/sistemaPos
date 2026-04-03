@@ -1,0 +1,21 @@
+# --- Herramientas de IA y Documentación ---
+.claude
+*.txt
+*.md
+!README.md
+
+# --- Backend: Seguridad y Configuración ---
+pos-backend/.env
+pos-backend/.env.example
+pos-backend/src/config/env.ts
+
+# --- Backend: Scripts de Base de Datos ---
+# (Ignoramos el seed para evitar cargar datos de prueba pesados)
+pos-backend/src/seed.ts
+
+# --- Frontend: Seguridad ---
+pos-frontend/.env
+
+# --- Frontend: Pruebas (E2E y Resultados) ---
+pos-frontend/e2e/
+pos-frontend/test-results/
