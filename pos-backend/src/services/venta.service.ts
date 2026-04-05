@@ -2,6 +2,7 @@ import { Op, Transaction } from 'sequelize';
 import { sequelize, Venta, DetalleVenta, Factura, Producto, Vendedor } from '../models';
 import { MetodoPago } from '../models/Venta';
 import { getIO } from '../socket';
+import { imprimirRecibo, ItemRecibo } from './print.service';
 
 interface ItemVenta {
   id_producto: number;
@@ -96,7 +97,14 @@ export const crearVenta = async (
       { transaction: t }
     );
 
-    return { venta, factura };
+    // Capturar items con nombre para el recibo (datos ya en memoria)
+    const itemsConNombre: ItemRecibo[] = items.map((item) => ({
+      nombre: productoMap[item.id_producto].nombre,
+      cantidad: item.cantidad,
+      precio_historico: Number(productoMap[item.id_producto].precio),
+    }));
+
+    return { venta, factura, itemsConNombre };
   }).then((result) => {
     getIO().emit('nueva_venta', {
       id_venta: result.venta.id_venta,
@@ -106,7 +114,17 @@ export const crearVenta = async (
       fecha: result.venta.fecha,
     });
     getIO().emit('stock_actualizado');
-    return result;
+
+    // Imprimir recibo de forma asíncrona — un fallo no afecta la venta
+    imprimirRecibo({
+      nro_factura: result.factura.nro_factura,
+      fecha: result.venta.fecha,
+      metodo_pago: result.venta.metodo_pago,
+      items: result.itemsConNombre,
+      total: Number(result.factura.total),
+    }).catch((err) => console.error('[PrintService] Error al imprimir recibo:', err));
+
+    return { venta: result.venta, factura: result.factura };
   });
 };
 
