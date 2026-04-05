@@ -12,6 +12,7 @@ let isReady = false;
 export const getWhatsAppStatus = () => ({ enabled: WHATSAPP_ENABLED, ready: isReady });
 
 export const initWhatsApp = (): void => {
+  console.log(WHATSAPP_ENABLED);
   if (!WHATSAPP_ENABLED) {
     console.log('[WhatsApp] Bot deshabilitado por configuracion (WHATSAPP_ENABLED=false).');
     return;
@@ -19,9 +20,13 @@ export const initWhatsApp = (): void => {
 
   const client = new Client({
     authStrategy: new LocalAuth({ dataPath: WHATSAPP_SESSION_PATH }),
+    webVersionCache: {
+      type: 'remote',
+      remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1015901248-alpha.html',
+    },
     puppeteer: {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     },
   });
 
@@ -55,13 +60,16 @@ export const initWhatsApp = (): void => {
 };
 
 const onMessage = async (msg: Message): Promise<void> => {
-  if (msg.isGroupMsg || msg.type !== 'chat') return;
+  if (msg.from.endsWith('@g.us') || msg.type !== 'chat') return;
 
   const senderNumber = msg.from.replace('@c.us', '');
-
+  console.log(senderNumber);
+  console.log(`[MENSAJE] De: ${senderNumber} | Texto: ${msg.body}`);
+  console.log(`[PERMISO] ¿Está permitido?: ${WHATSAPP_ALLOWED_NUMBERS.includes(senderNumber)}`);
   if (!WHATSAPP_ALLOWED_NUMBERS.includes(senderNumber)) return;
 
   const text = msg.body.trim().toLowerCase();
+  console.log(text);
 
   try {
     const response = await handleCommand(text);

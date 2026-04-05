@@ -23,5 +23,6 @@ pos-frontend/test-results/
 # --- Backend: Archivos generados en runtime ---
 pos-backend/receipts/
 
-# --- WhatsApp Bot: Sesión ---
+# --- WhatsApp Bot: Sesión y caché ---
 pos-backend/.wwebjs_auth/
+pos-backend/.wwebjs_cache/
