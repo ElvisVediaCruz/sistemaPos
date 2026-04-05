@@ -7,6 +7,7 @@ import { PORT, NODE_ENV } from './config/env';
 import router from './routes';
 import { errorHandler } from './middleware/error.middleware';
 import { initSocket } from './socket';
+import { initWhatsApp } from './services/whatsapp.service';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -33,6 +34,8 @@ const start = async () => {
     httpServer.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
+
+    initWhatsApp();
   } catch (error) {
     console.error('Error al iniciar:', error);
     process.exit(1);

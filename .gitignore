@@ -19,3 +19,9 @@ pos-frontend/.env
 # --- Frontend: Pruebas (E2E y Resultados) ---
 pos-frontend/e2e/
 pos-frontend/test-results/
+
+# --- Backend: Archivos generados en runtime ---
+pos-backend/receipts/
+
+# --- WhatsApp Bot: Sesión ---
+pos-backend/.wwebjs_auth/
